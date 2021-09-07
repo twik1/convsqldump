@@ -8,28 +8,12 @@ import base64
 Coversion area
 """
 
-from Crypto.Protocol.KDF import PBKDF2
-from Crypto.Hash import SHA256
-from Crypto.Util.Padding import unpad
 from Crypto.Cipher import AES
 import base64
 
 def decrypt_aes(oldvalue):
-    # Determine salt and ciphertext
-    encryptedDataB64 = 'U2FsdGVkX18A+AhjLZpfOq2HilY+8MyrXcz3lHMdUII2cud0DnnIcAtomToclwWOtUUnoyTY2qCQQXQfwDYotw=='
-    encryptedData = base64.b64decode(encryptedDataB64)
-    salt = encryptedData[8:16]
-    ciphertext = encryptedData[16:]
-
-    # Reconstruct Key/IV-pair
-    pbkdf2Hash = PBKDF2(b'"mypassword"', salt, 32 + 16, count=100000, hmac_hash_module=SHA256)
-    key = pbkdf2Hash[0:32]
-    iv = pbkdf2Hash[32:32 + 16]
-
-    # Decrypt with AES-256 / CBC / PKCS7 Padding
-    cipher = AES.new(key, AES.MODE_CBC, iv)
-    decrypted = unpad(cipher.decrypt(ciphertext), 16)
-    return oldvalue
+    cipher = AES.new(encryption_key, AES.MODE_CFB, iv, segment_size=128)
+    return cipher.decrypt(encrypted_data)
 
 conversion_list = [
     #['user', 'name', conversion_func]
